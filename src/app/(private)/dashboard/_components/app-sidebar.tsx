@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import useProject from "@/hooks/use-project";
 import { APPLICATION_NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { PlusIcon } from "lucide-react";
@@ -20,16 +21,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// TODO: This array needs to be removed lates. This is temporary for building the UI
-const projects = [
-  {
-    name: "Project 1",
-  },
-];
-
 export function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
+  const { projects, selectedProjectId, setSelectedProjectId } = useProject();
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
@@ -69,18 +64,21 @@ export function AppSidebar() {
           <SidebarGroupLabel>Your Projects</SidebarGroupLabel>
           <SidebarContent>
             <SidebarMenu>
-              {projects.map((project) => {
+              {projects?.map((project) => {
                 return (
                   <SidebarMenuItem key={project.name}>
                     <SidebarMenuButton asChild>
-                      <div>
+                      <div onClick={() => setSelectedProjectId(project.id)}>
                         <div
                           className={cn(
                             "flex size-6 items-center justify-center rounded-sm border bg-white text-sm text-primary",
-                            { "bg-primary text-white": true },
+                            {
+                              "bg-primary text-white":
+                                project.id === selectedProjectId,
+                            },
                           )}
                         >
-                          {project.name[0]}
+                          {project.name[0]?.toUpperCase()}
                         </div>
                         <span>{project.name}</span>
                       </div>
@@ -92,7 +90,7 @@ export function AppSidebar() {
               {open && (
                 <SidebarMenuItem>
                   <Link href="/create">
-                    <Button variant="outline" size="sm" className="w-fit">
+                    <Button variant="default" size="sm" className="w-fit">
                       <PlusIcon />
                       Create Project
                     </Button>
