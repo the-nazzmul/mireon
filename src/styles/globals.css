@@ -83,3 +83,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+.custom-bg {
+  @apply bg-gradient-to-r from-[#f97316ff] via-[#eb9258ff] to-[#f97316ff];
+}
+
+/* 
+accent-main: f97316ff
+accent-middle: eb9258ff
+*/

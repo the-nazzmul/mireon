@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { api } from "@/trpc/react";
 import { useForm } from "react-hook-form";
 
 type FormInput = {
@@ -12,8 +14,32 @@ type FormInput = {
 
 const CreatePage = () => {
   const { register, handleSubmit, reset } = useForm<FormInput>();
+  const createProject = api.project.createProject.useMutation();
 
   const onSubmit = (data: FormInput) => {
+    createProject.mutate(
+      {
+        name: data.projectName,
+        githubUrl: data.repoUrl,
+        githubToken: data.githubToken,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Success!",
+            description: "Project Created Successfully",
+          });
+        },
+        onError: () => {
+          toast({
+            variant: "destructive",
+            title: "Failure!",
+            description: "Failed to create project",
+          });
+        },
+      },
+    );
+
     console.log(data);
   };
 
@@ -33,12 +59,12 @@ const CreatePage = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-2 space-y-2">
           <Input
-            {...(register("projectName"), { required: true })}
+            {...register("projectName", { required: true })}
             placeholder="Project Name"
             required
           />
           <Input
-            {...(register("repoUrl"), { required: true })}
+            {...register("repoUrl", { required: true })}
             placeholder="Github URL"
             type="url"
             required
