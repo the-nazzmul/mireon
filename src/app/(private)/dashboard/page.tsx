@@ -8,6 +8,7 @@ const DashboardPage = () => {
   const { project } = useProject();
   return (
     <div>
+      {project?.id}
       <div className="flex flex-wrap items-center justify-between gap-y-4">
         {/* repository link */}
         <div className="flex w-fit items-center rounded-md bg-primary px-4 py-4">

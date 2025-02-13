@@ -15,7 +15,7 @@ export const projectRouter = createTRPCRouter({
         data: {
           name: input.name,
           githubUrl: input.githubUrl,
-          UserToProject: {
+          userToProject: {
             create: {
               userId: ctx.user.userId!,
             },
@@ -27,7 +27,7 @@ export const projectRouter = createTRPCRouter({
   getAllProjects: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.project.findMany({
       where: {
-        UserToProject: {
+        userToProject: {
           some: {
             userId: ctx.user.userId!,
           },
