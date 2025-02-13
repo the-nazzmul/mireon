@@ -13,28 +13,6 @@ type Response = {
   commitDate: string;
 };
 
-function extractRepoDetails(
-  url: string,
-): { owner: string; repo: string } | null {
-  try {
-    const parsedUrl = new URL(url);
-    const pathSegments = parsedUrl.pathname.split("/").filter(Boolean);
-
-    if (pathSegments.length >= 2) {
-      const owner = pathSegments[0] ?? "";
-      const repo = pathSegments[1] ?? "";
-      return {
-        owner,
-        repo,
-      };
-    }
-  } catch (error) {
-    console.error("Invalid URL:", error);
-  }
-
-  return null;
-}
-
 export const getCommitHashes = async (
   githubUrl: string,
 ): Promise<Response[]> => {
@@ -72,6 +50,30 @@ export const pullCommits = async (projectId: string) => {
   );
   return unprocessedCommits;
 };
+
+// util type functions
+
+function extractRepoDetails(
+  url: string,
+): { owner: string; repo: string } | null {
+  try {
+    const parsedUrl = new URL(url);
+    const pathSegments = parsedUrl.pathname.split("/").filter(Boolean);
+
+    if (pathSegments.length >= 2) {
+      const owner = pathSegments[0] ?? "";
+      const repo = pathSegments[1] ?? "";
+      return {
+        owner,
+        repo,
+      };
+    }
+  } catch (error) {
+    console.error("Invalid URL:", error);
+  }
+
+  return null;
+}
 
 async function fetchProjectGithubUrl(projectId: string) {
   const project = await db.project.findUnique({
