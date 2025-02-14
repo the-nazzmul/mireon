@@ -47,6 +47,10 @@ const CommitLogs = () => {
                       </span>
                     </Link>
                   </div>
+                  <span className="font-semibold">{commit.commitMessage}</span>
+                  <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-500">
+                    {commit.summary}
+                  </pre>
                 </div>
               </>
             </li>
