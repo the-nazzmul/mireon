@@ -9,7 +9,7 @@ export const projectRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         githubUrl: z.string(),
-        githubToken: z.string().optional(),
+        githubToken: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -24,8 +24,8 @@ export const projectRouter = createTRPCRouter({
           },
         },
       });
-      await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
       await pullCommits(project.id);
+      await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
       return project;
     }),
   getAllProjects: protectedProcedure.query(async ({ ctx }) => {

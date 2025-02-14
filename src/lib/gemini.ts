@@ -60,7 +60,7 @@ export async function summarizeCode(doc: Document) {
     ]);
 
     return response.response.text();
-  } catch (error) {
+  } catch {
     return "";
   }
 }

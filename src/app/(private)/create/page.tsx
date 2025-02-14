@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 type FormInput = {
   projectName: string;
   repoUrl: string;
-  githubToken?: string;
+  githubToken: string;
 };
 
 const CreatePage = () => {
@@ -75,7 +75,8 @@ const CreatePage = () => {
           />
           <Input
             {...register("githubToken")}
-            placeholder="Github Token (Optional)"
+            placeholder="Github Token"
+            required
           />
           <Button type="submit" disabled={createProject.isPending}>
             Create Project
