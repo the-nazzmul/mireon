@@ -66,7 +66,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {projects?.map((project) => {
                 return (
-                  <SidebarMenuItem key={project.name}>
+                  <SidebarMenuItem
+                    key={project.name}
+                    className="cursor-pointer"
+                  >
                     <SidebarMenuButton asChild>
                       <div onClick={() => setSelectedProjectId(project.id)}>
                         <div
