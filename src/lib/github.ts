@@ -140,6 +140,7 @@ async function summarizeCommit(githubUrl: string, commitHash: string) {
   const { data } = await axios.get(`${githubUrl}/commit/${commitHash}.diff`, {
     headers: {
       Accept: "application/vnd.github.v3.diff",
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
     },
   });
   return (await summarizeCommitByAI(data)) || "";
