@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import useProject from "@/hooks/use-project";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
@@ -31,27 +32,35 @@ const CommitLogs = () => {
                   alt="author image"
                   className="relative mt-3 size-8 flex-none rounded-full bg-gray-50"
                 />
-                <div className="flex-auto rounded-md bg-white p-3 ring-1 ring-inset ring-gray-200">
-                  <div className="flex justify-between gap-x-4">
-                    <Link
-                      target="_black"
-                      href={`${project?.githubUrl}/commits/${commit.commitHash}`}
-                      className="py-0.5 text-xs leading-5 text-gray-500"
-                    >
-                      <span className="font-medium text-gray-900">
-                        {commit.comitAuthorName}
+                <Card className="w-full">
+                  <div className="flex-auto rounded-md ring-1 ring-inset ring-gray-200">
+                    <CardHeader>
+                      <div className="flex justify-between gap-x-4">
+                        <Link
+                          target="_black"
+                          href={`${project?.githubUrl}/commits/${commit.commitHash}`}
+                          className="text-xs leading-5"
+                        >
+                          <span className="font-bold">
+                            {commit.comitAuthorName}{" "}
+                          </span>
+                          <span className="inline-flex items-center">
+                            commited
+                            <ExternalLinkIcon className="ml-1 size-4" />
+                          </span>
+                        </Link>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <span className="font-semibold">
+                        {commit.commitMessage}
                       </span>
-                      <span className="inline-flex items-center">
-                        commited
-                        <ExternalLinkIcon className="ml-1 size-4" />
-                      </span>
-                    </Link>
+                      <pre className="mt-2 whitespace-pre-wrap text-sm leading-6">
+                        {commit.summary}
+                      </pre>
+                    </CardContent>
                   </div>
-                  <span className="font-semibold">{commit.commitMessage}</span>
-                  <pre className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-500">
-                    {commit.summary}
-                  </pre>
-                </div>
+                </Card>
               </>
             </li>
           );
