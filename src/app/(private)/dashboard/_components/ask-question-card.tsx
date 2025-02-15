@@ -14,6 +14,7 @@ import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { askQuestion } from "../actions";
 import { readStreamableValue } from "ai/rsc";
+import MDEditor from "@uiw/react-md-editor";
 
 const AskQuestionCard = () => {
   const { project } = useProject();
@@ -27,11 +28,13 @@ const AskQuestionCard = () => {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setAnswer("");
+    setFileReferences([]);
     if (!project?.id) return;
     setLoading(true);
-    setOpen(true);
 
     const { output, fileReferences } = await askQuestion(question, project.id);
+    setOpen(true);
     setFileReferences(fileReferences);
 
     for await (const delta of readStreamableValue(output)) {
@@ -45,7 +48,7 @@ const AskQuestionCard = () => {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[80vw]">
           <DialogHeader>
             <DialogTitle>
               <Image
@@ -56,11 +59,20 @@ const AskQuestionCard = () => {
               />
             </DialogTitle>
           </DialogHeader>
-          {answer}
-          <h1>File Reference</h1>
-          {fileReferences.map((file) => {
-            return <span key={file.fileName}>{file.fileName}</span>;
-          })}
+
+          <MDEditor.Markdown
+            source={answer}
+            className="max-w-70vw !h-full max-h-[40vh] overflow-scroll rounded-md p-4"
+          />
+
+          <Button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Close
+          </Button>
         </DialogContent>
       </Dialog>
 
@@ -75,7 +87,7 @@ const AskQuestionCard = () => {
               placeholder="Ask any question about this repository"
               onChange={(e) => setQuestion(e.target.value)}
             />
-            <Button className="mt-4" type="submit">
+            <Button className="mt-4" type="submit" disabled={loading}>
               Ask Mireon
             </Button>
           </form>
