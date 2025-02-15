@@ -52,12 +52,15 @@ const AskQuestionCard = () => {
         <DialogContent className="max-h-90vh sm:max-w-[80vw]">
           <DialogHeader>
             <DialogTitle>
-              <Image
-                src="/mireon-logo.png"
-                alt="mireon logo"
-                width={40}
-                height={40}
-              />
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/mireon-logo.png"
+                  alt="mireon logo"
+                  width={40}
+                  height={40}
+                />
+                <h1 className="font-bold text-primary">Mireon</h1>
+              </div>
             </DialogTitle>
           </DialogHeader>
 
