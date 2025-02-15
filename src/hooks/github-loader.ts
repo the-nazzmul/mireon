@@ -2,6 +2,7 @@ import { generateEmbedding, summarizeCode } from "@/lib/gemini";
 import { db } from "@/server/db";
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github";
 import { Document } from "@langchain/core/documents";
+import { sleep } from "@trpc/server/unstable-core-do-not-import";
 
 export const loadGithubRepo = async (
   githubUrl: string,
@@ -30,44 +31,70 @@ export const indexGithubRepo = async (
   githubToken?: string,
 ) => {
   const docs = await loadGithubRepo(githubUrl, githubToken);
-  const allEmbeddings = await generateEmbeddings(docs);
-
-  await Promise.allSettled(
-    allEmbeddings.map(async (embedding, index) => {
-      console.log(`Processing ${index} of ${allEmbeddings.length}`);
-
-      if (!embedding) return;
+  for (let i = 0; i < docs.length; i++) {
+    try {
+      console.log(`Processing file ${i + 1} of ${docs.length}`);
+      await sleep(1000);
+      const doc = docs[i];
+      const summary = await summarizeCode(doc!);
+      const embeddingValues = await generateEmbedding(summary);
 
       const sourceCodeEmbedding = await db.sourceCodeEmbedding.create({
         data: {
-          summary: embedding.summary,
-          sourceCode: embedding.sourceCode,
-          fileName: embedding.fileName,
+          summary: summary,
+          sourceCode: JSON.parse(JSON.stringify(doc?.pageContent)),
+          fileName: doc?.metadata.source,
           projectId,
         },
       });
 
-      //inset the embedding as prisma doesn't do it automatically
       await db.$executeRaw`
       UPDATE "SourceCodeEmbedding"
-      SET "summaryEmbedding" = ${embedding.embedding} :: vector
+      SET "summaryEmbedding" = ${embeddingValues} :: vector
       WHERE "id" = ${sourceCodeEmbedding.id}
       `;
-    }),
-  );
+    } catch (error) {
+      console.error(`Error processing file ${i + 1}`, error);
+    }
+  }
+  // const allEmbeddings = await generateEmbeddings(docs);
+
+  // await Promise.allSettled(
+  //   allEmbeddings.map(async (embedding, index) => {
+  //     console.log(`Processing ${index} of ${allEmbeddings.length}`);
+
+  //     if (!embedding) return;
+
+  //     const sourceCodeEmbedding = await db.sourceCodeEmbedding.create({
+  //       data: {
+  //         summary: embedding.summary,
+  //         sourceCode: embedding.sourceCode,
+  //         fileName: embedding.fileName,
+  //         projectId,
+  //       },
+  //     });
+
+  //     //inset the embedding as prisma doesn't do it automatically
+  //     await db.$executeRaw`
+  //     UPDATE "SourceCodeEmbedding"
+  //     SET "summaryEmbedding" = ${embedding.embedding} :: vector
+  //     WHERE "id" = ${sourceCodeEmbedding.id}
+  //     `;
+  //   }),
+  // );
 };
 
-const generateEmbeddings = async (docs: Document[]) => {
-  return await Promise.all(
-    docs.map(async (doc) => {
-      const summary = await summarizeCode(doc);
-      const embedding = await generateEmbedding(summary);
-      return {
-        summary,
-        embedding,
-        sourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
-        fileName: doc.metadata.source,
-      };
-    }),
-  );
-};
+// const generateEmbeddings = async (docs: Document[]) => {
+//   return await Promise.all(
+//     docs.map(async (doc) => {
+//       const summary = await summarizeCode(doc);
+//       const embedding = await generateEmbedding(summary);
+//       return {
+//         summary,
+//         embedding,
+//         sourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
+//         fileName: doc.metadata.source,
+//       };
+//     }),
+//   );
+// };

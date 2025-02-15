@@ -48,15 +48,9 @@ export async function summarizeCode(doc: Document) {
   try {
     const code = doc.pageContent.slice(0, 10000);
     const response = await model.generateContent([
-      `You are an intelligent senior software engineer who specialises in onboarding junior software engineers onto projects.
-     You are onboarding a junior software engineer and explaining to them the purpose of the ${doc.metadata.source} file.
+      `You are a software engineer tasked with summarizing a code file.  Provide a concise (200 words max) summary of the purpose and functionality of the following code:
 
-     Here is the code:
-     ------
-     ${code}
-     ------
-    
-    Give a summary no more than 200 words of the code above`,
+       ${code}`,
     ]);
 
     return response.response.text();
