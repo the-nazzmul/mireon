@@ -63,12 +63,12 @@ model SourceCodeEmbedding {
 }
 
 model Question {
-    id             String   @id @default(cuid())
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
-    question       String
-    answer         String
-    filesReference Json?
+    id              String   @id @default(cuid())
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    question        String
+    answer          String
+    filesReferences Json?
 
     projectId String
     project   Project @relation(fields: [projectId], references: [id])

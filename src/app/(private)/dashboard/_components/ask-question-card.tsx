@@ -10,33 +10,38 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import useProject from "@/hooks/use-project";
+import MDEditor from "@uiw/react-md-editor";
+import { readStreamableValue } from "ai/rsc";
+import { SaveIcon } from "lucide-react";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { askQuestion } from "../actions";
-import { readStreamableValue } from "ai/rsc";
-import MDEditor from "@uiw/react-md-editor";
 import CodeReferences from "./code-references";
+import { api } from "@/trpc/react";
+import { toast } from "@/hooks/use-toast";
 
 const AskQuestionCard = () => {
   const { project } = useProject();
   const [question, setQuestion] = useState<string>("");
+  const [answer, setAnswer] = useState("");
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [fileReferences, setFileReferences] = useState<
+  const [filesReferences, setFilesReferences] = useState<
     { fileName: string; sourceCode: string; summary: string }[]
   >([]);
-  const [answer, setAnswer] = useState("");
+
+  const saveAnswer = api.project.saveAnswer.useMutation();
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setAnswer("");
-    setFileReferences([]);
+    setFilesReferences([]);
     if (!project?.id) return;
     setLoading(true);
 
     const { output, fileReferences } = await askQuestion(question, project.id);
     setOpen(true);
-    setFileReferences(fileReferences);
+    setFilesReferences(fileReferences);
 
     for await (const delta of readStreamableValue(output)) {
       if (delta) {
@@ -69,15 +74,49 @@ const AskQuestionCard = () => {
             className="max-w-70vw !h-full max-h-[35vh] overflow-scroll rounded-md p-4"
           />
 
-          <CodeReferences fileReferences={fileReferences} />
-          <Button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-            }}
-          >
-            Close
-          </Button>
+          <CodeReferences filesReferences={filesReferences} />
+          <div className="flex justify-between">
+            <Button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              Close
+            </Button>
+            <Button
+              disabled={saveAnswer.isPending}
+              variant="default"
+              onClick={() => {
+                saveAnswer.mutate(
+                  {
+                    projectId: project!.id,
+                    question,
+                    answer,
+                    filesReferences,
+                  },
+                  {
+                    onSuccess: () => {
+                      toast({
+                        title: "Success!",
+                        description: "Answer has been saved!",
+                      });
+                    },
+                    onError: () => {
+                      toast({
+                        variant: "destructive",
+                        title: "Failure!",
+                        description: "Failed to save the answer!",
+                      });
+                    },
+                  },
+                );
+              }}
+            >
+              <SaveIcon className="size-4" />
+              Save Answer
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

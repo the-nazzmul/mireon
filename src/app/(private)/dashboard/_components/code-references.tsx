@@ -7,23 +7,24 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 type Props = {
-  fileReferences: { fileName: string; sourceCode: string; summary: string }[];
+  filesReferences: { fileName: string; sourceCode: string; summary: string }[];
 };
 
-const CodeReferences = ({ fileReferences }: Props) => {
-  const [tab, setTab] = useState(fileReferences[0]?.fileName);
-  if (fileReferences.length === 0) return null;
+const CodeReferences = ({ filesReferences }: Props) => {
+  const [tab, setTab] = useState(filesReferences[0]?.fileName);
+  if (filesReferences.length === 0) return null;
   return (
     <div className="mt-4 max-w-[70vw]">
       <Tabs value={tab} onValueChange={setTab}>
         <div className="flex gap-2 overflow-scroll rounded-md p-1">
-          {fileReferences.map((file) => (
+          {filesReferences.map((file) => (
             <button
               key={file.fileName}
               className={cn(
                 "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted",
                 {
-                  "bg-primary text-primary-foreground": tab === file.fileName,
+                  "border border-primary text-primary-foreground":
+                    tab === file.fileName,
                 },
               )}
               onClick={() => setTab(file.fileName)}
@@ -32,7 +33,7 @@ const CodeReferences = ({ fileReferences }: Props) => {
             </button>
           ))}
         </div>
-        {fileReferences.map((file) => (
+        {filesReferences.map((file) => (
           <TabsContent
             key={file.fileName}
             value={file.fileName}
