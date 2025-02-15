@@ -4,6 +4,7 @@ import useProject from "@/hooks/use-project";
 import { ExternalLinkIcon, GithubIcon } from "lucide-react";
 import Link from "next/link";
 import CommitLogs from "./_components/commit-logs";
+import AskQuestionCard from "./_components/ask-question-card";
 
 const DashboardPage = () => {
   const { project } = useProject();
@@ -33,13 +34,13 @@ const DashboardPage = () => {
         </div>
       </div>
       <div className="mt-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-5">
           {/* TODO: Implement comp0nents here */}
-          AskQuestionCard MeetingCard
+          <AskQuestionCard />
+          MeetingCard
         </div>
       </div>
       <div className="mt-8">
-        {/* TODO: Implement component here */}
         <CommitLogs />
       </div>
     </div>
