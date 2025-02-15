@@ -15,6 +15,7 @@ import { FormEvent, useState } from "react";
 import { askQuestion } from "../actions";
 import { readStreamableValue } from "ai/rsc";
 import MDEditor from "@uiw/react-md-editor";
+import CodeReferences from "./code-references";
 
 const AskQuestionCard = () => {
   const { project } = useProject();
@@ -48,7 +49,7 @@ const AskQuestionCard = () => {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[80vw]">
+        <DialogContent className="max-h-90vh sm:max-w-[80vw]">
           <DialogHeader>
             <DialogTitle>
               <Image
@@ -62,9 +63,10 @@ const AskQuestionCard = () => {
 
           <MDEditor.Markdown
             source={answer}
-            className="max-w-70vw !h-full max-h-[40vh] overflow-scroll rounded-md p-4"
+            className="max-w-70vw !h-full max-h-[35vh] overflow-scroll rounded-md p-4"
           />
 
+          <CodeReferences fileReferences={fileReferences} />
           <Button
             type="button"
             onClick={() => {
