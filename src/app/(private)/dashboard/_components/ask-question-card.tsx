@@ -19,6 +19,7 @@ import { askQuestion } from "../actions";
 import CodeReferences from "./code-references";
 import { api } from "@/trpc/react";
 import { toast } from "@/hooks/use-toast";
+import useRefetch from "@/hooks/use-refetch";
 
 const AskQuestionCard = () => {
   const { project } = useProject();
@@ -50,6 +51,8 @@ const AskQuestionCard = () => {
     }
     setLoading(false);
   };
+
+  const refetch = useRefetch();
 
   return (
     <>
@@ -97,6 +100,7 @@ const AskQuestionCard = () => {
                   },
                   {
                     onSuccess: () => {
+                      refetch();
                       toast({
                         title: "Success!",
                         description: "Answer has been saved!",

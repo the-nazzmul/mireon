@@ -37,7 +37,7 @@ const CodeReferences = ({ filesReferences }: Props) => {
           <TabsContent
             key={file.fileName}
             value={file.fileName}
-            className="max-h-[35vh] max-w-7xl overflow-scroll rounded-md"
+            className="max-h-[40vh] max-w-7xl overflow-scroll rounded-md"
           >
             <SyntaxHighlighter language="typescript" style={atomDark}>
               {file.sourceCode}
