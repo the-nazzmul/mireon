@@ -1,12 +1,11 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { Presentation, UploadCloud } from "lucide-react";
-import { useState } from "react";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "@/hooks/use-toast";
 import { UploadButton } from "@/lib/uploadthing";
-import { cn } from "@/lib/utils";
+import { Presentation } from "lucide-react";
+import { useState } from "react";
 
 const MeetingCard = () => {
   const [progress, setProgress] = useState(0);
@@ -27,32 +26,40 @@ const MeetingCard = () => {
             <UploadButton
               endpoint="meetingAudio"
               onClientUploadComplete={(res) => {
-                // Do something with the response
-                console.log("Files: ", res);
-                alert("Upload Completed");
+                setIsUploading(false);
+                console.log("FILE:", res[0]?.serverData.fileUrl);
               }}
               onUploadError={(error: Error) => {
-                // Do something with the error.
-                alert(`ERROR! ${error.message}`);
+                toast({
+                  title: "Error",
+                  description: error.message,
+                  variant: "destructive",
+                });
+              }}
+              onUploadProgress={(progress) => {
+                setIsUploading(true);
+                setProgress(progress);
               }}
               appearance={{
                 button:
-                  "bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2",
+                  "ut-readying:bg-primary bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 ",
               }}
             />
           </div>
         </>
       )}
       {isUploading && (
-        <div>
-          <CircularProgressbar
-            value={progress}
-            text={`${progress}%`}
-            className="size-20"
-          />
-          <p className="text-center text-sm text-gray-500">
+        <div className="flex flex-col items-center justify-center">
+          <Presentation className="size-10 animate-bounce" />
+          <h3 className="mt-2 text-sm font-semibold">
             Uploading your meeting...
-          </p>
+          </h3>
+
+          <Progress
+            value={progress}
+            className="my-12 w-full"
+            style={{ height: 30 }}
+          />
         </div>
       )}
     </Card>
