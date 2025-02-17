@@ -1,35 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { uploadFile } from "@/lib/firebase";
-import { set } from "date-fns";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { Presentation, UploadCloud } from "lucide-react";
 import { useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { UploadButton } from "@/lib/uploadthing";
+import { cn } from "@/lib/utils";
 
 const MeetingCard = () => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      "audio/*": [".mp3", ".wav", ".m4a"],
-    },
-    multiple: false,
-    maxSize: 50_000_000,
-    onDrop: async (acceptedFiles) => {
-      setIsUploading(true);
-      console.log(acceptedFiles);
-      const file = acceptedFiles[0];
-      const downloadUrl = await uploadFile(file as File, setProgress);
-      setIsUploading(false);
-    },
-  });
+
   return (
-    <Card
-      className="col-span-2 flex flex-col items-center justify-center p-10"
-      {...getRootProps()}
-    >
+    <Card className="col-span-2 flex flex-col items-center justify-center p-10">
       {!isUploading && (
         <>
           <Presentation className="size-10 animate-bounce" />
@@ -40,16 +24,36 @@ const MeetingCard = () => {
             Powered by AI
           </p>
           <div className="mt-6">
-            <Button disabled={isUploading}>
-              <UploadCloud
-                className="-ml-0.5 mr-1.5 size-5"
-                area-hidden="true"
-              />
-              Upload Meeting
-              <input className="hidden" {...getInputProps()} />
-            </Button>
+            <UploadButton
+              endpoint="meetingAudio"
+              onClientUploadComplete={(res) => {
+                // Do something with the response
+                console.log("Files: ", res);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+              appearance={{
+                button:
+                  "bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2",
+              }}
+            />
           </div>
         </>
+      )}
+      {isUploading && (
+        <div>
+          <CircularProgressbar
+            value={progress}
+            text={`${progress}%`}
+            className="size-20"
+          />
+          <p className="text-center text-sm text-gray-500">
+            Uploading your meeting...
+          </p>
+        </div>
       )}
     </Card>
   );

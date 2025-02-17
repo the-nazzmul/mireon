@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -18,19 +19,19 @@ const CodeReferences = ({ filesReferences }: Props) => {
       <Tabs value={tab} onValueChange={setTab}>
         <div className="flex gap-2 overflow-scroll rounded-md p-1">
           {filesReferences.map((file) => (
-            <button
+            <Button
+              variant="outline"
               key={file.fileName}
               className={cn(
-                "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted",
+                "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted",
                 {
-                  "border border-primary text-primary-foreground":
-                    tab === file.fileName,
+                  "border border-primary text-primary": tab === file.fileName,
                 },
               )}
               onClick={() => setTab(file.fileName)}
             >
               {file.fileName}
-            </button>
+            </Button>
           ))}
         </div>
         {filesReferences.map((file) => (
