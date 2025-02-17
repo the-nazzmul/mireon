@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import MDEditor from "@uiw/react-md-editor";
 import CodeReferences from "../dashboard/_components/code-references";
+import { Card } from "@/components/ui/card";
 
 const QAPage = () => {
   const { selectedProjectId } = useProject();
@@ -33,7 +34,7 @@ const QAPage = () => {
           return (
             <React.Fragment key={question.id}>
               <SheetTrigger onClick={() => setQuestionIndex(index)}>
-                <div className="flex items-center gap-4 rounded-lg border p-4 shadow">
+                <Card className="flex items-center gap-4 rounded-lg border p-4 shadow">
                   <Image
                     className="rounded-full"
                     height={30}
@@ -50,9 +51,11 @@ const QAPage = () => {
                         {question.createdAt.toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="line-clamp-1 text-sm">{question.answer}</p>
+                    <p className="line-clamp-1 text-sm text-gray-400">
+                      {question.answer}
+                    </p>
                   </div>
-                </div>
+                </Card>
               </SheetTrigger>
             </React.Fragment>
           );
