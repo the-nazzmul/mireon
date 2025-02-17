@@ -134,6 +134,7 @@ const AskQuestionCard = () => {
             <Textarea
               placeholder="Ask any question about this repository"
               onChange={(e) => setQuestion(e.target.value)}
+              rows={4}
             />
             <Button className="mt-4" type="submit" disabled={loading}>
               Ask Mireon

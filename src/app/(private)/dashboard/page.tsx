@@ -5,6 +5,7 @@ import { ExternalLinkIcon, GithubIcon } from "lucide-react";
 import Link from "next/link";
 import CommitLogs from "./_components/commit-logs";
 import AskQuestionCard from "./_components/ask-question-card";
+import MeetingCard from "./_components/meeting-card";
 
 const DashboardPage = () => {
   const { project } = useProject();
@@ -35,9 +36,8 @@ const DashboardPage = () => {
       </div>
       <div className="mt-4">
         <div className="grid gap-4 sm:grid-cols-5">
-          {/* TODO: Implement comp0nents here */}
           <AskQuestionCard />
-          MeetingCard
+          <MeetingCard />
         </div>
       </div>
       <div className="mt-8">
