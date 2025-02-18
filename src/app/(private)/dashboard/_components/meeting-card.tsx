@@ -2,14 +2,20 @@
 
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import useProject from "@/hooks/use-project";
 import { toast } from "@/hooks/use-toast";
 import { UploadButton } from "@/lib/uploadthing";
+import { api } from "@/trpc/react";
 import { Presentation } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const MeetingCard = () => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const { project } = useProject();
+  const uploadMeeting = api.project.uploadMeeting.useMutation();
+  const router = useRouter();
 
   return (
     <Card className="col-span-2 flex flex-col items-center justify-center p-10">
@@ -26,8 +32,20 @@ const MeetingCard = () => {
             <UploadButton
               endpoint="meetingAudio"
               onClientUploadComplete={(res) => {
+                console.log(res[0]?.serverData.fileUrl);
+                if (!project) return;
                 setIsUploading(false);
-                console.log("FILE:", res[0]?.serverData.fileUrl);
+                if (!res) return;
+                uploadMeeting.mutate({
+                  projectId: project.id,
+                  meetingUrl: res[0]?.serverData.fileUrl as string,
+                  name: res[0]?.name as string,
+                });
+                toast({
+                  title: "Meeting uploaded",
+                  description: "Your meeting has been uploaded",
+                });
+                router.push("/meetings");
               }}
               onUploadError={(error: Error) => {
                 toast({
@@ -37,6 +55,7 @@ const MeetingCard = () => {
                 });
               }}
               onUploadProgress={(progress) => {
+                if (!project) return;
                 setIsUploading(true);
                 setProgress(progress);
               }}
