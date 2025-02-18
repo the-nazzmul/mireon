@@ -96,7 +96,7 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.meeting.create({
+      const meeting = await ctx.db.meeting.create({
         data: {
           name: input.name,
           meetingUrl: input.meetingUrl,
@@ -104,6 +104,7 @@ export const projectRouter = createTRPCRouter({
           status: "PROCESSING",
         },
       });
+      return meeting;
     }),
   getMeeting: protectedProcedure
     .input(

@@ -15,15 +15,17 @@ export const processMeeting = async (meetingUrl: string) => {
     auto_chapters: true,
   });
 
-  const summaries =
+  if (!transcript.text) throw new Error("No transcript found");
+
+  const summaries = await Promise.all(
     transcript.chapters?.map(async (chapter) => ({
       start: msToTime(chapter.start),
       end: msToTime(chapter.end),
       summary: chapter.summary,
       gist: chapter.gist,
       headline: chapter.headline,
-    })) || [];
-  if (!transcript.text) throw new Error("No transcript found");
+    })) || [],
+  );
 
   return {
     summaries,

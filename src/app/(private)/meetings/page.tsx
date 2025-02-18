@@ -13,7 +13,7 @@ const MeetingPage = () => {
     {
       projectId: selectedProjectId!,
     },
-    { refetchInterval: 400 },
+    { refetchInterval: 4000 },
   );
   return (
     <div>

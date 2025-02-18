@@ -6,6 +6,8 @@ import useProject from "@/hooks/use-project";
 import { toast } from "@/hooks/use-toast";
 import { UploadButton } from "@/lib/uploadthing";
 import { api } from "@/trpc/react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { Presentation } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,8 +16,24 @@ const MeetingCard = () => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const { project } = useProject();
-  const uploadMeeting = api.project.uploadMeeting.useMutation();
   const router = useRouter();
+  const uploadMeeting = api.project.uploadMeeting.useMutation();
+
+  const processMeeting = useMutation({
+    mutationFn: async (data: {
+      meetingUrl: string;
+      meetingId: string;
+      projectId: string;
+    }) => {
+      const { meetingId, meetingUrl, projectId } = data;
+      const response = await axios.post("/api/process-meeting", {
+        meetingUrl: meetingUrl,
+        projectId: projectId,
+        meetingId: meetingId,
+      });
+      return response.data;
+    },
+  });
 
   return (
     <Card className="col-span-2 flex flex-col items-center justify-center p-10">
@@ -36,16 +54,27 @@ const MeetingCard = () => {
                 if (!project) return;
                 setIsUploading(false);
                 if (!res) return;
-                uploadMeeting.mutate({
-                  projectId: project.id,
-                  meetingUrl: res[0]?.serverData.fileUrl as string,
-                  name: res[0]?.name as string,
-                });
-                toast({
-                  title: "Meeting uploaded",
-                  description: "Your meeting has been uploaded",
-                });
-                router.push("/meetings");
+                uploadMeeting.mutate(
+                  {
+                    projectId: project.id,
+                    meetingUrl: res[0]?.serverData.fileUrl as string,
+                    name: res[0]?.name as string,
+                  },
+                  {
+                    onSuccess: (meeting) => {
+                      toast({
+                        title: "Meeting uploaded",
+                        description: "Your meeting has been uploaded",
+                      });
+                      processMeeting.mutateAsync({
+                        meetingUrl: res[0]?.serverData.fileUrl as string,
+                        meetingId: meeting.id,
+                        projectId: project.id,
+                      });
+                      router.push("/meetings");
+                    },
+                  },
+                );
               }}
               onUploadError={(error: Error) => {
                 toast({
