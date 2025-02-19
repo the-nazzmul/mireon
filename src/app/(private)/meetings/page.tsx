@@ -9,9 +9,10 @@ import Link from "next/link";
 import MeetingCard from "../dashboard/_components/meeting-card";
 import { toast } from "@/hooks/use-toast";
 import useRefetch from "@/hooks/use-refetch";
+import { useUser } from "@clerk/nextjs";
 
 const MeetingPage = () => {
-  const { selectedProjectId } = useProject();
+  const { selectedProjectId, project } = useProject();
   const { data: meetings, isLoading } = api.project.getMeeting.useQuery(
     {
       projectId: selectedProjectId!,
@@ -20,6 +21,8 @@ const MeetingPage = () => {
   );
   const deleteMeeting = api.project.deleteMeeting.useMutation();
   const refetch = useRefetch();
+
+  const { user } = useUser();
 
   return (
     <div>
@@ -62,7 +65,10 @@ const MeetingPage = () => {
                 <Button
                   size="sm"
                   variant="destructive"
-                  disabled={deleteMeeting.isPending}
+                  disabled={
+                    deleteMeeting.isPending || user?.id !== project?.ownerId
+                  }
+                  hidden={user?.id !== project?.ownerId}
                   onClick={() =>
                     deleteMeeting.mutate(
                       { meetingId: meeting.id },

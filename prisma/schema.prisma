@@ -33,6 +33,7 @@ model Project {
     updatedAt           DateTime              @updatedAt
     name                String
     githubUrl           String
+    ownerId             String
     deletedAt           DateTime?
     userToProject       UserToProject[]
     commits             Commit[]
