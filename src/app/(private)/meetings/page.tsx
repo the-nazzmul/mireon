@@ -1,11 +1,14 @@
 "use client";
-import useProject from "@/hooks/use-project";
-import { api } from "@/trpc/react";
-import MeetingCard from "../dashboard/_components/meeting-card";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import useProject from "@/hooks/use-project";
+import { api } from "@/trpc/react";
+import { Trash2Icon } from "lucide-react";
+import Link from "next/link";
+import MeetingCard from "../dashboard/_components/meeting-card";
+import { toast } from "@/hooks/use-toast";
+import useRefetch from "@/hooks/use-refetch";
 
 const MeetingPage = () => {
   const { selectedProjectId } = useProject();
@@ -15,6 +18,9 @@ const MeetingPage = () => {
     },
     { refetchInterval: 4000 },
   );
+  const deleteMeeting = api.project.deleteMeeting.useMutation();
+  const refetch = useRefetch();
+
   return (
     <div>
       <MeetingCard />
@@ -53,6 +59,24 @@ const MeetingPage = () => {
                 <Link href={`/meetings/${meeting.id}`}>
                   <Button size="sm">View</Button>
                 </Link>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  disabled={deleteMeeting.isPending}
+                  onClick={() =>
+                    deleteMeeting.mutate(
+                      { meetingId: meeting.id },
+                      {
+                        onSuccess: () => {
+                          toast({ title: "Meeting deleted" });
+                          refetch();
+                        },
+                      },
+                    )
+                  }
+                >
+                  <Trash2Icon />
+                </Button>
               </div>
             </Card>
           </li>
