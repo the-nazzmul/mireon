@@ -7,8 +7,11 @@ import CommitLogs from "./_components/commit-logs";
 import AskQuestionCard from "./_components/ask-question-card";
 import MeetingCard from "./_components/meeting-card";
 import ArchiveBtn from "./_components/archive-button";
-import InviteButton from "./_components/invite-button";
+const InviteButton = dynamic(() => import("./_components/invite-button"), {
+  ssr: false,
+});
 import TeamMembers from "./_components/team-members";
+import dynamic from "next/dynamic";
 
 const DashboardPage = () => {
   const { project } = useProject();
