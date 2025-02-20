@@ -48,7 +48,19 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      pullCommits(input.projectId).then().catch(console.error);
+      const project = await ctx.db.project.findUnique({
+        where: {
+          id: input.projectId,
+        },
+        select: {
+          githubUrl: true,
+        },
+      });
+
+      if (project?.githubUrl) {
+        pullCommits(input.projectId).then().catch(console.error);
+      }
+
       return await ctx.db.commit.findMany({
         where: { projectId: input.projectId },
       });

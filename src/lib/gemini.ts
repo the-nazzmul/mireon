@@ -12,7 +12,7 @@ export const summarizeCommitByAI = async (diff: string) => {
 
         Reminders about the git diff format:
         For every file, there are a few metadata lines, like (for example):
-        
+
         \`\`\`
         diff --git a/lib/index.js b/lib/index.js
         index aadf691..bfef603 100644
@@ -54,8 +54,9 @@ export async function summarizeCode(doc: Document) {
     ]);
 
     return response.response.text();
-  } catch {
-    return "";
+  } catch (error) {
+    console.error(`Error summarizing code for ${doc.metadata.source}:`, error);
+    return null;
   }
 }
 

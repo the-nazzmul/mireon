@@ -3,35 +3,7 @@ import { db } from "@/server/db";
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github";
 import { Document } from "@langchain/core/documents";
 import { sleep } from "@trpc/server/unstable-core-do-not-import";
-
-const isBinaryFile = (fileName: string): boolean => {
-  const binaryExtensions = [
-    "png",
-    "jpg",
-    "jpeg",
-    "gif",
-    "bmp",
-    "ico",
-    "webp",
-    "svg",
-    "pdf",
-    "zip",
-    "rar",
-    "7z",
-    "tar",
-    "gz",
-    "mp3",
-    "wav",
-    "flac",
-    "mp4",
-    "mkv",
-    "avi",
-    "exe",
-    "bin",
-    "dll",
-  ];
-  return binaryExtensions.some((ext) => fileName.endsWith(`.${ext}`));
-};
+import path from "path";
 
 export const loadGithubRepo = async (
   githubUrl: string,
@@ -51,12 +23,7 @@ export const loadGithubRepo = async (
     unknown: "warn",
     maxConcurrency: 5,
   });
-
-  const dirtyDocs = await loader.load();
-  const docs = dirtyDocs.filter((doc) => {
-    const fileName = doc.metadata.source || "";
-    return !fileName.includes(".DS_Store") && !isBinaryFile(fileName);
-  });
+  const docs: Document[] = await loader.load();
   return docs;
 };
 
@@ -66,12 +33,57 @@ export const indexGithubRepo = async (
   githubToken?: string,
 ) => {
   const docs = await loadGithubRepo(githubUrl, githubToken);
+  const allowedExtensions = [
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".py",
+    ".java",
+    ".c",
+    ".cpp",
+    ".go",
+    ".html",
+    ".css",
+    ".scss",
+    ".sql",
+    ".sh",
+    ".txt",
+    ".md",
+    ".json",
+  ];
+
   for (let i = 0; i < docs.length; i++) {
     try {
       console.log(`Processing file ${i + 1} of ${docs.length}`);
+      console.log(`File source: ${docs[i]?.metadata.source}`);
       await sleep(1000);
       const doc = docs[i];
-      const summary = await summarizeCode(doc!);
+
+      if (!doc || !doc.metadata || !doc.metadata.source) {
+        console.warn(
+          `Skipping file ${i + 1} due to missing document or metadata.`,
+        );
+        continue;
+      }
+
+      const fileExtension = path.extname(doc.metadata.source).toLowerCase();
+
+      if (!allowedExtensions.includes(fileExtension) && fileExtension !== "") {
+        console.log(
+          `Skipping file ${doc.metadata.source} due to file extension: ${fileExtension}`,
+        );
+        continue;
+      }
+
+      const summary = await summarizeCode(doc);
+      if (!summary) {
+        console.warn(
+          `Skipping embedding for ${doc.metadata.source} due to summarization error.`,
+        );
+        continue;
+      }
+
       const embeddingValues = await generateEmbedding(summary);
 
       const sourceCodeEmbedding = await db.sourceCodeEmbedding.create({
@@ -90,8 +102,15 @@ export const indexGithubRepo = async (
       `;
     } catch (error) {
       console.error(`Error processing file ${i + 1}`, error);
+      console.error(
+        `Error details for file ${docs[i]?.metadata.source}`,
+        error,
+      );
     }
   }
+
+  //THE CODES BELOW WORK FASTER BUT HITS THE RATE LIMIT
+
   // const allEmbeddings = await generateEmbeddings(docs);
 
   // await Promise.allSettled(
@@ -117,19 +136,20 @@ export const indexGithubRepo = async (
   //     `;
   //   }),
   // );
-};
+  // };
 
-// const generateEmbeddings = async (docs: Document[]) => {
-//   return await Promise.all(
-//     docs.map(async (doc) => {
-//       const summary = await summarizeCode(doc);
-//       const embedding = await generateEmbedding(summary);
-//       return {
-//         summary,
-//         embedding,
-//         sourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
-//         fileName: doc.metadata.source,
-//       };
-//     }),
-//   );
-// };
+  // const generateEmbeddings = async (docs: Document[]) => {
+  //   return await Promise.all(
+  //     docs.map(async (doc) => {
+  //       const summary = await summarizeCode(doc);
+  //       const embedding = await generateEmbedding(summary);
+  //       return {
+  //         summary,
+  //         embedding,
+  //         sourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
+  //         fileName: doc.metadata.source,
+  //       };
+  //     }),
+  //   );
+  // }
+};

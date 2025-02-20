@@ -53,8 +53,12 @@ const ArchiveBtn = () => {
   };
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild hidden={user.id !== project.id}>
-        <Button variant="destructive" disabled={archiveProject.isPending}>
+      <AlertDialogTrigger asChild>
+        <Button
+          className={`${user.id !== project.ownerId && "hidden"}`}
+          variant="destructive"
+          disabled={archiveProject.isPending || user.id !== project.ownerId}
+        >
           Archive
         </Button>
       </AlertDialogTrigger>
