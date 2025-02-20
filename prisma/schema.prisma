@@ -15,16 +15,17 @@ enum MeetingStatus {
 }
 
 model User {
-    id             String          @id @default(cuid())
-    createdAt      DateTime        @default(now())
-    updatedAt      DateTime        @updatedAt
-    imageUrl       String?
-    firstName      String?
-    lastName       String?
-    emailAddress   String          @unique
-    credits        Int             @default(500)
-    userToProject  UserToProject[]
-    questionsAsked Question[]
+    id                 String              @id @default(cuid())
+    createdAt          DateTime            @default(now())
+    updatedAt          DateTime            @updatedAt
+    imageUrl           String?
+    firstName          String?
+    lastName           String?
+    emailAddress       String              @unique
+    credits            Int                 @default(500)
+    userToProject      UserToProject[]
+    questionsAsked     Question[]
+    stripeTransactions StripeTransaction[]
 }
 
 model Project {
@@ -115,4 +116,13 @@ model Commit {
     summary            String
     projectId          String
     project            Project  @relation(fields: [projectId], references: [id])
+}
+
+model StripeTransaction {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    credits   Int
 }
