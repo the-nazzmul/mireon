@@ -122,6 +122,16 @@ export const indexGithubRepo = async (
         continue;
       }
 
+      const fileName = path.basename(doc.metadata.source);
+
+      // **ADD .DS_Store CHECK HERE:**
+      if (fileName === ".DS_Store") {
+        console.log(
+          `Explicitly skipping .DS_Store file: ${doc.metadata.source}`,
+        );
+        continue; // Skip to the next file
+      }
+
       const fileExtension = path.extname(doc.metadata.source).toLowerCase();
 
       if (!allowedExtensions.includes(fileExtension) && fileExtension !== "") {
