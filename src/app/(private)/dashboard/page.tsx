@@ -6,6 +6,7 @@ import Link from "next/link";
 import CommitLogs from "./_components/commit-logs";
 import AskQuestionCard from "./_components/ask-question-card";
 import MeetingCard from "./_components/meeting-card";
+import ArchiveBtn from "./_components/archive-button";
 
 const DashboardPage = () => {
   const { project } = useProject();
@@ -31,7 +32,7 @@ const DashboardPage = () => {
 
         <div className="flex items-center gap-4">
           {/* TODO: implement components here */}
-          Team members Invite button ArchiveBtn
+          Team members Invite button <ArchiveBtn />
         </div>
       </div>
       <div className="mt-4">

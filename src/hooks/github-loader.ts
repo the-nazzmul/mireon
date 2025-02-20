@@ -4,6 +4,35 @@ import { GithubRepoLoader } from "@langchain/community/document_loaders/web/gith
 import { Document } from "@langchain/core/documents";
 import { sleep } from "@trpc/server/unstable-core-do-not-import";
 
+const isBinaryFile = (fileName: string): boolean => {
+  const binaryExtensions = [
+    "png",
+    "jpg",
+    "jpeg",
+    "gif",
+    "bmp",
+    "ico",
+    "webp",
+    "svg",
+    "pdf",
+    "zip",
+    "rar",
+    "7z",
+    "tar",
+    "gz",
+    "mp3",
+    "wav",
+    "flac",
+    "mp4",
+    "mkv",
+    "avi",
+    "exe",
+    "bin",
+    "dll",
+  ];
+  return binaryExtensions.some((ext) => fileName.endsWith(`.${ext}`));
+};
+
 export const loadGithubRepo = async (
   githubUrl: string,
   githubToken?: string,
@@ -12,16 +41,22 @@ export const loadGithubRepo = async (
     accessToken: githubToken || "",
     branch: "main",
     ignoreFiles: [
-      "package-lock.json, yarm.lock",
+      "package-lock.json",
+      "yarn.lock",
       "pnpm-lock.yaml",
       "bun.lockb",
+      ".DS_Store",
     ],
     recursive: true,
     unknown: "warn",
     maxConcurrency: 5,
   });
 
-  const docs = await loader.load();
+  const dirtyDocs = await loader.load();
+  const docs = dirtyDocs.filter((doc) => {
+    const fileName = doc.metadata.source || "";
+    return !fileName.includes(".DS_Store") && !isBinaryFile(fileName);
+  });
   return docs;
 };
 
