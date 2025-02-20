@@ -8,6 +8,7 @@ import AskQuestionCard from "./_components/ask-question-card";
 import MeetingCard from "./_components/meeting-card";
 import ArchiveBtn from "./_components/archive-button";
 import InviteButton from "./_components/invite-button";
+import TeamMembers from "./_components/team-members";
 
 const DashboardPage = () => {
   const { project } = useProject();
@@ -32,8 +33,7 @@ const DashboardPage = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* TODO: implement components here */}
-          Team members
+          <TeamMembers />
           <InviteButton />
           <ArchiveBtn />
         </div>
