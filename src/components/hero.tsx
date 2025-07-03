@@ -24,7 +24,7 @@ const Hero = async () => {
               Mireon simplifies the experience of collaborating in a project for
               developers. It can help with learning about the GitHub repository,
               analyze changes made with each commits, and can summarize missed
-              meetings. With a simple and user friendly approach of course..
+              meetings.
             </p>
             <Button className="mt-4" size="lg">
               <Link href="/dashboard">

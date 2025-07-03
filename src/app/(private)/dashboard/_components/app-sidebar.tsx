@@ -28,10 +28,10 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image src="/mireon-logo.png" alt="logo" width={40} height={40} />
           {open && <h1 className="text-xl font-bold text-primary">Mireon</h1>}
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         {/* Application */}
