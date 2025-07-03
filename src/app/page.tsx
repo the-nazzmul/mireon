@@ -1,5 +1,11 @@
-import { Button } from "@/components/ui/button";
+import Hero from "@/components/hero";
+import Navbar from "@/components/navbar";
 
 export default async function Home() {
-  return <Button>Click me</Button>;
+  return (
+    <main>
+      <Navbar />
+      <Hero />
+    </main>
+  );
 }
