@@ -10,20 +10,6 @@
 
 👉 [Visit Mireon](#) &nbsp; _(https://mireon-nazz.vercel.app/)_
 
----
-
-## 📌 Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Deployment](#deployment)
-
----
-
 ## ✨ Features
 
 - 🔍 **GitHub Repo Indexing**  
@@ -48,17 +34,17 @@
 
 ## 🧰 Tech Stack
 
-| Layer              | Tech Used                                   |
-| ------------------ | ------------------------------------------- |
-| **Frontend**       | React, Next.js, TailwindCSS, Radix UI       |
-| **Backend**        | Next.js API Routes, tRPC, Prisma            |
-| **Database**       | PostgreSQL (via Prisma ORM and NeonDB)      |
-| **AI & NLP**       | Gemini, LangChain, AssemblyAI               |
-| **Authentication** | Clerk                                       |
-| **Upload**         | UploadThing                                 |
-| **Payment**        | Stripe                                      |
-| **Dev Tools**      | TypeScript, ESLint, Prettier, Prisma Studio |
-| **Hosting**        | Vercel / GitHub Pages (suggested)           |
+| Layer              | Tech Used                                        |
+| ------------------ | ------------------------------------------------ |
+| **Frontend**       | React, Next.js, TailwindCSS, Shadcn UI, Magic UI |
+| **Backend**        | Next.js API Routes, tRPC, Prisma, NeonDB         |
+| **Database**       | PostgreSQL (via Prisma ORM and NeonDB)           |
+| **AI & NLP**       | Gemini, LangChain, AssemblyAI                    |
+| **Authentication** | Clerk                                            |
+| **Upload**         | UploadThing                                      |
+| **Payment**        | Stripe                                           |
+| **Dev Tools**      | TypeScript, ESLint, Prettier, Prisma Studio      |
+| **Hosting**        | Vercel (suggested)                               |
 
 ---
 
@@ -75,8 +61,8 @@ bun install # or npm / yarn / pnpm
 Generate the Prisma client and apply migrations:
 
 ```bash
-pnpm run db:generate
-pnpm run db:push
+bunx prisma generate
+bunx prisma db push
 ```
 
 Start development server:
@@ -118,3 +104,11 @@ NEXT_PUBLIC_APP_URL=<base_url>
 ```
 
 Replace the values with your actual credentials. Do not commit your .env file to version control.
+
+## 📬 Contact
+
+For feedback, feature requests, or collaboration inquiries:
+
+- 📧 Email: nazmul.hussain.utchash@gmail.com
+
+- 💼 LinkedIn: https://www.linkedin.com/in/nazmul-hussain-utchchash
